@@ -43,3 +43,57 @@ const skillsRO: readonly string[] = ['dev', 'devops']
 // arrays
 const skillsGArr: Array<string> = ['q', 'w', 'qwe'] // Array<string> - generyc
 const skillsGArrRO: ReadonlyArray<string> = ['q', 'w', 'qwe'] // аналог readonly string[]
+
+
+// HACK: Enums
+
+// const res = {
+//     message: 'Платёж успешен',
+//     statusCode: 1,
+// }
+
+// мб чиловым и строковым
+// гетерогенный - содержит и строки, и числа
+// по умолчанию гетерогенный ведёт себя как числовой
+// компилится в функцию
+
+enum StatusCode {
+    SUCCESS = 1,
+    FAILED = 'p',
+    IN_PROCESS = 2,
+}
+
+const res = {
+    message: 'Платёж успешен',
+    statusCode: StatusCode.SUCCESS,
+}
+
+// 1 - успех
+// 'p' - в процессе
+// 3 - отклонён
+
+
+function action(status: StatusCode) {
+    console.log(status)
+}
+
+action(StatusCode.SUCCESS) // ok
+action(1) // ok
+
+// action('p')
+// error, потому что гетерогенный enum ведет ебя как числовой
+// надо обращаться только в виде StatusCode.SUCCESS
+
+// enum по дефолту компилится в функцию
+// const enum вместо функции прокидывает значения везде, где они используется 
+
+const enum Roles {
+    ADMIN = 1,
+    USER = 2,
+}
+
+const logRoles = (role: number) => {
+    console.log(role)
+}
+
+logRoles(Roles.ADMIN)
