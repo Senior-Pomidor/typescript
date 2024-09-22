@@ -48,3 +48,68 @@ function toWords(number: string | number, asOrdinal: boolean): string {
 
     return asOrdinal ? makeOrdinal(words) : words;
 }
+
+
+export function generateWords(number: number, words: Array<string> = []): string {
+    // We’re done
+    if (number === 0) {
+        return !words.length
+            ? 'zero'
+            : words.join(' ').replace(/,$/, '');
+    }
+
+    // If negative, prepend “minus”
+    if (number < 0) {
+        words.push('minus');
+        number = Math.abs(number);
+    }
+
+    if (number < 20) {
+        return generateWords(0, [...words, LESS_THAN_TWENTY[number]])
+    }
+
+    if (number < DecimalNumbers.ONE_HUNDRED) {
+        const remainder = number % DecimalNumbers.TEN;
+        let word = TENTHS_LESS_THAN_HUNDRED[Math.floor(number / DecimalNumbers.TEN)];
+
+        // In case of remainder, we need to handle it here to be able to add the “-”
+        if (remainder) {
+            word += '-' + LESS_THAN_TWENTY[remainder]
+
+            return generateWords(0, [...words, word])
+        }
+        
+
+        return generateWords(remainder, [...words, word])
+    }
+
+    let remainder: number | null = null
+    let word: string = ''
+
+    if (number < DecimalNumbers.ONE_THOUSAND) {
+        remainder = number % DecimalNumbers.ONE_HUNDRED;
+        word = generateWords(Math.floor(number / DecimalNumbers.ONE_HUNDRED)) + ' hundred';
+    } else if (number < DecimalNumbers.ONE_MILLION) {
+        remainder = number % DecimalNumbers.ONE_THOUSAND;
+        word = generateWords(Math.floor(number / DecimalNumbers.ONE_THOUSAND)) + ' thousand,';
+    } else if (number < DecimalNumbers.ONE_BILLION) {
+        remainder = number % DecimalNumbers.ONE_MILLION;
+        word = generateWords(Math.floor(number / DecimalNumbers.ONE_MILLION)) + ' million,';
+    } else if (number < DecimalNumbers.ONE_TRILLION) {
+        remainder = number % DecimalNumbers.ONE_BILLION;
+        word = generateWords(Math.floor(number / DecimalNumbers.ONE_BILLION)) + ' billion,';
+    } else if (number < DecimalNumbers.ONE_QUADRILLION) {
+        remainder = number % DecimalNumbers.ONE_TRILLION;
+        word = generateWords(Math.floor(number / DecimalNumbers.ONE_TRILLION)) + ' trillion,';
+    } else if (number <= MAX) {
+        remainder = number % DecimalNumbers.ONE_QUADRILLION;
+        word = generateWords(Math.floor(number / DecimalNumbers.ONE_QUADRILLION)) +
+        ' quadrillion,';
+    }
+
+    if (!remainder) {
+        throw new Error('not correct number')
+    }
+
+    return generateWords(remainder, [...words, word])
+}
