@@ -1,14 +1,12 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+// import makeOrdinal from './makeOrdinal';
+// import isFinite from './isFinite';
+// import isSafeNumber from './isSafeNumber';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateWords = generateWords;
-const makeOrdinal_1 = __importDefault(require("./makeOrdinal"));
-const isFinite_1 = __importDefault(require("./isFinite"));
-const isSafeNumber_1 = __importDefault(require("./isSafeNumber"));
 ;
 const MAX_NUMBER = 9007199254740992;
+const MIN_NUMBER = -9007199254740992 + 1;
 const LESS_THAN_TWENTY = [
     'zero', 'one', 'two', 'three', 'four', 'five', 'six',
     'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve',
@@ -19,18 +17,28 @@ const TENTHS_LESS_THAN_HUNDRED = [
     'zero', 'ten', 'twenty', 'thirty', 'forty',
     'fifty', 'sixty', 'seventy', 'eighty', 'ninety',
 ];
+const makeOrdinal = (word) => {
+    console.log(word);
+    return word;
+};
+const isFinite = (num) => {
+    return num < Infinity;
+};
+const isSafeNumber = (num) => {
+    return num <= MAX_NUMBER && num >= MIN_NUMBER;
+};
 function toWords(number, asOrdinal) {
     const num = typeof number === 'string'
         ? parseInt(number, 10)
         : number;
-    if (!(0, isFinite_1.default)(num)) {
+    if (!isFinite(num)) {
         throw new TypeError('Not a finite number: ' + number + ' (' + typeof number + ')');
     }
-    if (!(0, isSafeNumber_1.default)(num)) {
+    if (!isSafeNumber(num)) {
         throw new RangeError('Input is not a safe number, it’s either too large or too small.');
     }
     const words = generateWords(num);
-    return asOrdinal ? (0, makeOrdinal_1.default)(words) : words;
+    return asOrdinal ? makeOrdinal(words) : words;
 }
 function generateWords(number, words = []) {
     // We’re done
@@ -79,7 +87,7 @@ function generateWords(number, words = []) {
         remainder = number % 1000000000000 /* DecimalNumbers.ONE_TRILLION */;
         word = generateWords(Math.floor(number / 1000000000000 /* DecimalNumbers.ONE_TRILLION */)) + ' trillion,';
     }
-    else if (number <= MAX) {
+    else if (number <= MAX_NUMBER) {
         remainder = number % 1000000000000000 /* DecimalNumbers.ONE_QUADRILLION */;
         word = generateWords(Math.floor(number / 1000000000000000 /* DecimalNumbers.ONE_QUADRILLION */)) +
             ' quadrillion,';
