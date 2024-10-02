@@ -123,3 +123,203 @@ fetchWithAuth('str', qwe.str as 'GET')
 
 fetchWithAuth('str', 'dabudi dabudai' as 'GET')
 // - тоже ок, поэтому аккуратно !!!
+
+
+
+// HACK: Type Aliases
+// Определение типа с имнем, наподобие переменной
+// XXX: TS StyleGuide рекомендует именовать с заглавной
+
+type HttpMethod = 'POST' | 'GET';
+type FetchWithAuthResponse = 1 | -1;
+type CoolString = string; // CoolString - отдельный тип
+
+const fetchWithAuthTyped = (method: HttpMethod): FetchWithAuthResponse => {
+    return 1
+}
+
+// Типизация объектов
+
+// Было
+// let vasya: {
+//     name: string,
+//     age: number,
+//     skills: string[],
+//     isAuth?: boolean,
+//     log: (id: number) => string,
+// } = {
+//     name: 'Vasya',
+//     age: 25,
+//     skills: ['Vue', 'React'],
+//     isAuth: true,
+//     log: (age) => '1',
+// }
+
+// Стало
+type User = {
+    name: string,
+    age: number,
+    skills: string[],
+    isAuth?: boolean,
+    log: (id: number) => string,
+}
+
+let vasya: User = {
+    name: 'Vasya',
+    age: 25,
+    skills: ['Vue', 'React'],
+    isAuth: true,
+    log: (age) => '1',
+}
+
+const petya: User = {
+    name: 'Petya',
+    age: 25,
+    skills: ['Vue', 'React'],
+    log: (age) => '1',
+}
+
+// HACK: Types Intersection
+// пересечение
+
+type User2 = {
+    name: string,
+    age: number,
+    skills: string[],
+}
+
+type Role2 = {
+    id: number,
+}
+
+// Пересечение
+type UserWithRole = User2 & Role2;
+// Итог : {
+//     name: string,
+//     age: number,
+//     skills: string[],
+//     id: number,
+// }
+
+const userWithRole: UserWithRole = {
+    name: 'Petya',
+    age: 25,
+    skills: ['Vue', 'React'],
+    id: 1,
+}
+
+
+// XXX: Пересечение типов объектов с одинаковыми полями
+// Тип поля в итоге должен удовлетворять сразу обоим типам
+// Если в TS нет такого (итогового) типа, то будет тип never
+type User3 = {
+    skill: string,
+    name: string,
+    id: number,
+}
+
+type Role3 = {
+    skill: string, // одинаковые типы
+    name: 'POST', // пересекающиеся типы
+    id: string, // разные типы, объединения которых нет в TS
+}
+
+type UserWithRole3 = User3 & Role3
+
+// const userWithRole3: UserWithRole3 = {
+//     skill: '', // string
+//     name: 'POST', // string & 'POST'
+//     id: 1, // never
+// }
+
+//XXX: В случае пересечения с одинаковыми полями, лучше делать композицию
+type UserWithRoleComp = {
+    user: User3,
+    role: Role3,
+}
+
+
+
+// HACK: Interfaces
+
+interface UserInterface {
+    name: string,
+    age: number,
+    skills: string[],
+
+    log: (id: number) => string,
+}
+
+// HACK: Interfaces intersection
+// Объединение интерфейсов
+
+interface UserWithRoleInterface extends UserInterface {
+    roleId: number,
+    // name: number, // error - Типы свойства "name" несовместимы.
+}
+// ИЛИ
+// interface RoleInterface {
+//     roleId: number,
+// }
+// interface UserWithRoleInterface extends UserInterface, RoleInterface {}
+
+let vasyaRole: UserWithRoleInterface = {
+    name: 'Vasya',
+    age: 25,
+    skills: ['Vue', 'React'],
+    roleId: 1,
+    log: (id) => '',
+}
+
+
+// HACK: интерфейс для объектов
+interface UserDic {
+    [index: number]: UserWithRoleInterface,
+}
+// означает что может быть сколько угодно полей, удовл. типу
+const userDic: UserDic = {
+    1: vasyaRole,
+    2: vasyaRole,
+    // ...
+}
+
+// HACK: утилитарный тип Record<>
+// аналогичен интерфейсу словаря выше
+type ud = Record<number, UserWithRoleInterface>
+
+
+
+
+// HACK: Типы или Интерфейсы?
+
+// XXX: Интерфейсы можно доопределить, типы нельзя
+// !!! Использовать только в случае доопределения внешних либ и т.п.
+// !!! В своём коде так лучше не делать
+
+interface int1 {
+    name: string,
+}
+
+interface int1 {
+    type: string,
+}
+
+// // В итоге будет 
+// interface int1 {
+//     name: string,
+//     type: string,
+// }
+
+
+// XXX: Интерфейсы нельзя для примитивных типов
+// Для простых типов и объединений -- использовать типы
+type ID = string | number
+// interface iID number // error
+// interface iID { id: number } // good
+
+// XXX: type
+// для простых типов, пересечений, объединений
+
+// XXX: interface
+// !!! всегда для объектов (рекомендация),
+// кроме случаев, когда НЕОБХОДИМ type (простые типы, пересечения, объединения)
