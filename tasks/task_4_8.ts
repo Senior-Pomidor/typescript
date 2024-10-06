@@ -49,37 +49,44 @@ interface IPayment {
 // разделение бизнес-сущности и сущности запроса
 interface IPaymentRequest extends IPayment {}
 
+
+// Ответ: статусы
+const enum PaymentStatus {
+    Failed = 'failed',
+    Success = 'success'
+}
+
+
 // Ответ: данные успешного ответа
-interface ResponseDataSuccess extends IPayment {
+interface PaymentDataSuccess extends IPayment {
     databaseId: number;
 }
 
-// Ответ: статусы
-const enum ResponseStatus {
-    failed = 'failed',
-    success = 'success'
-}
-
-// Ответ: коды ошибок
-type ResponseErrorCode = 1 | 2 | 3 | 4
-
 // Ответ: данные ошибки
-interface ResponseDataFailed {
+interface PaymentDataFailed {
     errorMessage: string;
-    errorCode: ResponseErrorCode;
+    errorCode: number;
 }
+
+
+// XXX: интерфейс предполагает возможность PaymentDataFailed при статусе 'success'
+// лучше разделить интерфейсы на уровень выше -- целиком успешный и неуспешный ответ
+//
+// interface IResponse {
+//     status: PaymentStatus;
+//     data: PaymentDataSuccess | PaymentDataFailed;
+// }
 
 // успешный ответ
 interface IResponseSuccess {
-    status: ResponseStatus.success;
-    data: ResponseDataSuccess;
+    status: PaymentStatus.Success;
+    data: PaymentDataSuccess;
 }
 
 // неуспешный ответ
 interface IResponseFailed {
-    status: ResponseStatus.failed;
-    data: ResponseDataFailed;
+    status: PaymentStatus.Failed;
+    data: PaymentDataFailed;
 }
 
 type IResponse = IResponseSuccess | IResponseFailed
-
