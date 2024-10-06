@@ -180,7 +180,7 @@ const petya: User = {
 }
 
 // HACK: Types Intersection
-// пересечение
+// пересечение (объединение с переечением)
 
 type User2 = {
     name: string,
@@ -192,7 +192,7 @@ type Role2 = {
     id: number,
 }
 
-// Пересечение
+// Пересечение (объединение с переечением)
 type UserWithRole = User2 & Role2;
 // Итог : {
 //     name: string,
@@ -256,6 +256,7 @@ interface UserInterface {
 interface UserWithRoleInterface extends UserInterface {
     roleId: number,
     // name: number, // error - Типы свойства "name" несовместимы.
+    // name: 'POST', // ok - Типы свойства "name" могут быть объединены.
 }
 // ИЛИ
 // interface RoleInterface {
@@ -264,30 +265,33 @@ interface UserWithRoleInterface extends UserInterface {
 // interface UserWithRoleInterface extends UserInterface, RoleInterface {}
 
 let vasyaRole: UserWithRoleInterface = {
+    // из определения UserInterface
     name: 'Vasya',
     age: 25,
     skills: ['Vue', 'React'],
-    roleId: 1,
     log: (id) => '',
+
+    // из определения UserWithRoleInterface
+    roleId: 1,
 }
 
 
-// HACK: интерфейс для объектов
+// HACK: интерфейс для объектов (словарей)
 interface UserDic {
     [index: number]: UserWithRoleInterface,
+    [index: string]: UserWithRoleInterface,
 }
 // означает что может быть сколько угодно полей, удовл. типу
 const userDic: UserDic = {
     1: vasyaRole,
-    2: vasyaRole,
+    '2': vasyaRole,
+    3: vasyaRole,
     // ...
 }
 
 // HACK: утилитарный тип Record<>
 // аналогичен интерфейсу словаря выше
 type ud = Record<number, UserWithRoleInterface>
-
-
 
 
 // HACK: Типы или Интерфейсы?
@@ -323,3 +327,61 @@ type ID = string | number
 // XXX: interface
 // !!! всегда для объектов (рекомендация),
 // кроме случаев, когда НЕОБХОДИМ type (простые типы, пересечения, объединения)
+
+
+// HACK: Optional
+// XXX: ?: - необязвтельнй параметр в функции
+const multiply = (num1: number, num2?: number): number => {
+    // return num1 * num2; // err - второго параметра может и не быть
+
+    if (!num2) {
+        return num1 * num1
+    }
+
+    // ok - сужение типов
+    return num1 * num2
+}
+
+multiply(1)
+multiply(1, 2)
+
+// XXX: ?: - необязвтельнй параметр в объекте
+interface UserPro {
+    login: string;
+    password?: {
+        type: 'prime' | 'sec';
+    };
+}
+// XXX: ?. - Optional Chaining
+// XXX: !. - Non-null Assertion Operator
+const testPass = (user: UserPro): boolean => {
+    // XXX: ?. - optional chaining - проверка на существование
+    const type = user.password?.type;
+
+    // XXX: !. - явно указываем (зуб даю) что тут всегда password будет не undefined
+    // Non-null Assertion Operator
+    // лучше не использовать
+    const type1 = user.password!.type;
+
+    console.log(type)
+    return true
+}
+
+testPass({
+    login: 'login',
+})
+
+testPass({
+    login: 'login',
+    password: {
+        type: 'sec',
+    },
+})
+
+// XXX: ?? - Nullish Coalescing
+// проверяет param на null и undefined
+const testPassStr = (param?: string): string => {
+    const str = param ?? multiply(5)
+
+    return '123'
+}
