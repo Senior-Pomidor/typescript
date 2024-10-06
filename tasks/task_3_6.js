@@ -11,7 +11,7 @@ const office = {
     }
 };
 const office2 = {
-    officeId: 45,
+    officeId: 46,
     isOpened: false,
     contacts: {
         phone: "+79100000000",
