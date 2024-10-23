@@ -16,3 +16,17 @@ const logIdVoidUdefined = (id) => {
         return id;
     }
 };
+// проверка типа, колючевое слово asserts
+// возвр либо undefined, либо ошибку
+// !!obj - проверка на null
+function assertUser(obj) {
+    if (typeof obj === 'object' && !!obj && 'name' in obj) {
+        return;
+    }
+    throw new Error('Invalid user');
+}
+const uAssert = {};
+// после выполнения assertUser,
+// uAssert ниже в коде будет ТОЧНО иметь тип UserAssert
+assertUser(uAssert);
+uAssert.name = 'Petya';
