@@ -99,3 +99,12 @@ export interface User {
     crypto: Crypto,
     role: Role,
 }
+
+export type UserList = User[]
+
+export type UsersResponse = {
+    users: UserList,
+    total: number,
+    skip: number,
+    limit: number,
+}
