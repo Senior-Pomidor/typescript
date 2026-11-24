@@ -1,5 +1,17 @@
 // Типизировать запрос к https://dummyjson.com/users
 
+// - Создать асинхронную функцию `getUsers(): Promise<dz_420_Types.UsersResponse>` (используя интерфейс ответа с `users`, `total`, `skip`, `limit`).
+
+// - Выполнить `fetch('https://dummyjson.com/users')`.
+
+// - Получить `const data: dz_420_Types.UsersResponse = await response.json()`.
+
+// - Вывести в консоль, например, `data.users[0].firstName` и `data.total`.
+
+// - Запустить через `npx ts-node dz/4_20_fetch_typing/solution.ts`.
+
+
+
 // Пример ответа:
 const response = {
     "users": [
@@ -2108,3 +2120,4 @@ const response = {
     "skip": 0,
     "limit": 30
 }
+
