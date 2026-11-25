@@ -31,22 +31,4 @@ const getUsers = () => __awaiter(void 0, void 0, void 0, function* () {
         throw error;
     }
 });
-
 getUsers();
-// let users = null
-// const loadUsers = async () => {
-//     let response = await fetch('https://dummyjson.com/users')
-//     return response
-// }
-// const fetchUsers = async () => {
-//     try {
-//         const response = await loadUsers()
-//         users = response
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
-// fetchUsers()
-//     .then(() => {
-//         console.log(users)
-//     })
