@@ -45,8 +45,12 @@ var Payment5Status;
 })(Payment5Status || (Payment5Status = {}));
 class Payment5 {
     constructor(id) {
-        this.id = id;
+        // можно присваивать значение прямо тут при объявлении
+        // не обязательно через конструктор
+        // лучше делать тут для читабельности, чтобы не забивать конструктор
         this.createdAt = new Date();
+        this.id = id;
+        // this.createdAt = new Date()
         this.status = Payment5Status.Holded;
     }
     getPaymentLifeTime() {
